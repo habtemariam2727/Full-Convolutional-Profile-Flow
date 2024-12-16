@@ -23,7 +23,7 @@ To get started with our models and understand how they work, we have prepared se
 
 We highly recommend going through these tutorials in the order listed above to gain a comprehensive understanding of the models and their applications. Especially **Conditional Generation** tutorial.
 
-Note: There are minor differences between the implementations in the tutorials and the actual implementations in the packages. However, these differences do not affect the understanding and usage of the code in both scripts.
+Note: There are minor differences between the implementations in the tutorials and the actual implementations in the packages. However, these differences do not affect the understanding and usage of the code in both sources.
 
 ## Code of Other Models
 
