@@ -2,10 +2,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+from matplotlib.colors import LinearSegmentedColormap
 
 font_path = 'tools/TIMES.TTF'
 font_prop = fm.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = font_prop.get_name()
+
 
 def get_max_and_index(*args):
     results = []
@@ -17,6 +19,15 @@ def get_max_and_index(*args):
         # Append the results as a tuple
         results.append((max_values, max_indices))
     return results
+
+def custom_colormap(n_colors):
+    # Define colors for the colormap: start (blue), center (green), end (red)
+    colors = [
+            (0.0, 0.2, 0.8),  # Cool blue
+            (0.4, 0.8, 0.6),  # Soft teal (middle, replacing white)
+            (0.8, 0.2, 0.2),  # Warm red
+        ]
+    return LinearSegmentedColormap.from_list('custom_coolwarm', colors, N=n_colors)
 
 def sampler(*args, num_samples=1000):
     # give np arraies as input and randomly sample num_samples from each array and return the samples
@@ -31,8 +42,11 @@ def plot_peak_times(results, resolution, country, models):
     all_peak_times = []
     
     # Change the colormap to a blue-tinted one
-    colors = plt.cm.get_cmap('coolwarm_r', len(models))  # Use 'coolwarm' for a balanced color map
-    
+    # colors = plt.cm.get_cmap('PuOr', len(models))  # Use 'coolwarm' for a balanced color map
+    # colors = adjust_coolwarm(len(models), midpoint=0.4)
+    n_colors = len(models)  # Number of distinct colors needed
+    colors = custom_colormap(n_colors)
+
     # Adjust figure size for a long and narrow layout
     plt.figure(figsize=(16, 3))  # Even longer and narrower
     _size = 20  # Set a reasonable size for the ticks
@@ -54,7 +68,7 @@ def plot_peak_times(results, resolution, country, models):
         avg_peak_time_in_hours = avg_peak_time_model / 60.0
         
         # Plot the average peak time with a black edge for better visibility
-        plt.scatter(avg_peak_time_in_hours, avg_peak_value, color=colors(i), edgecolor='black', s=150, 
+        plt.scatter(avg_peak_time_in_hours, avg_peak_value, color=colors(i), edgecolor='black', s=250, 
                     label=f'Center {models[i]} ({int(avg_peak_time_hours)}:{int(avg_peak_time_minutes):02d})')
         
         plt.xlim(0, 24)  # Time of day in hours (0 to 24)

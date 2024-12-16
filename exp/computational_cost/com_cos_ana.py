@@ -31,12 +31,16 @@ models = ['NICE - MMD', 'VAE - MMD', 'WGAN-GP - MMD', 'FCPFLOW - MMD']
 colors = ['blue', 'orange', 'green', 'red']  # Different colors for each model
 
 for i, model in enumerate(models):
+    if model =='FCPFLOW - MMD':
+        _model = 'FCPFlow'
+    else:
+        _model = model
     # Plot the original curve with transparency
     plt.plot(data_mmd['Step'], data_mmd[model], color=colors[i], alpha=0.3)
     
     # Calculate and plot the smoothed curve using a rolling mean
     smoothed_curve = data_mmd[model].rolling(window=100, min_periods=1).mean()
-    plt.plot(data_mmd['Step'], smoothed_curve, label=f'{model} (Smoothed)', color=colors[i])
+    plt.plot(data_mmd['Step'], smoothed_curve, label=f'{_model} (Smoothed)', color=colors[i])
 
     # Find and print the minimum MMD value and its corresponding step
     min_mmd = data_mmd[model].min()

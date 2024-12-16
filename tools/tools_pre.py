@@ -57,19 +57,23 @@ def plot_pre(pre, re_data_fcpflow, scaler, con_dim, re_data_list=None, _sample_i
             avg_prediction_item = np.mean(orig_data_re_item[:, con_dim:], axis=0)
             plt.plot(range(_len_con, _len_con + _len_pre), avg_prediction_item, label=f'Mean Prediction ({model_names[idx]})', color=colors[idx], linestyle=linestyles[idx], linewidth=1)
 
+    # Generate corresponding hour labels
+    x_labels = [0, 10, 20, 30, 40] # Labels to display
+    x_ticks = np.linspace(0, _len_con + _len_pre, num=48)[x_labels]  # Corresponding tick positions
+
     # Add grid, labels, legend, and limits
     _min = min((_real_pre.min(), 0)) # , lowest_prediction_fcpflow.min()
     _max = max((_real_pre.max(), highest_prediction_fcpflow.max()))
     plt.grid(True)
     plt.xlim(0, _len_con + _len_pre)
-    plt.ylim(_min, _max * 1.1)
-    plt.xticks(fontsize=front_size, fontproperties=font_prop)
+    plt.ylim(_min-6, _max * 1.1)
+    plt.xticks(x_ticks, labels=x_labels, fontsize=front_size, fontproperties=font_prop)
     plt.yticks(fontsize=front_size, fontproperties=font_prop)
 
     # Add labels and legend
     plt.xlabel('Time [Hours]', fontsize=front_size, fontproperties=font_prop)
     plt.ylabel('Consumption [kWh]', fontsize=front_size, fontproperties=font_prop)
-    plt.legend(fontsize=front_size, prop=font_prop, loc='upper left') # , bbox_to_anchor=(0, 1)
+    plt.legend(fontsize=front_size, prop=font_prop, loc='lower left') # , bbox_to_anchor=(0, 1)
 
     # Save the figure
     plt.savefig(path)

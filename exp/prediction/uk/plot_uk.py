@@ -27,7 +27,7 @@ dataloader_train, scaler = tl.create_data_loader(np_array_train, np_array_train.
 np_array_test = scaler.transform(np_array_test)
 
 # experiment configuration
-_row_peak_indx_max = np.unravel_index(np.argmax(np_array_test[:, 48:]), np_array_test[:, 48:].shape)[0]-2 # 0 ,-3 , -2
+_row_peak_indx_max = np.unravel_index(np.argmax(np_array_test[:, 48:]), np_array_test[:, 48:].shape)[0]-3 # 0 ,-3 , -2
 _sample_num = 100
 cond = torch.tensor(np_array_test[_row_peak_indx_max,:48]).view(1,-1).repeat(_sample_num,1)
 pre = torch.tensor(np_array_test)
@@ -92,7 +92,7 @@ re_data_list = None
 tp.plot_pre(pre, re_data_fcpflow, scaler, 48, re_data_list, _sample_index=_row_peak_indx_max, path=save_path)
 
 # plot all the data
-save_path = os.path.join(_parent_path, 'exp/prediction/uk', 'uk_all.png')
-plt.figure(figsize=(20,10))
-plt.plot(all_data[:,48:].T, color='blue', alpha=0.1)
-plt.savefig(save_path)
+# save_path = os.path.join(_parent_path, 'exp/prediction/uk', 'uk_all.png')
+# plt.figure(figsize=(20,10))
+# plt.plot(all_data[:,48:].T, color='blue', alpha=0.1)
+# plt.savefig(save_path)
