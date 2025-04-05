@@ -10,6 +10,7 @@ import torch
 import wandb
 import yaml
 import numpy as np
+import pickle
 
 import alg.models_fcpflow_lin as fcpf
 import tools.tools_train as tl
@@ -53,8 +54,13 @@ wandb.watch(model)
 wandb.config.data_shape = np_array_train.shape
 wandb.config.batch_size = config['FCPflow']['batch_size']
 
+# Save the scaler AS a pickle file
+scaler_path = os.path.join(_parent_path, 'exp/exp_hambt/scaler.pkl')
+with open(scaler_path, 'wb') as f:
+    pickle.dump(scaler, f)
+
 # train the model
 path = os.path.join(_parent_path, 'exp/exp_hambt')
-tl.train(path, model, dataloader_train, optimizer, 4000001, config['FCPflow']['condition_dim'], 
+tl.train(path, model, dataloader_train, optimizer, 10001, config['FCPflow']['condition_dim'], 
          device, scaler, dataloader_test, scheduler, 100, True)
 
