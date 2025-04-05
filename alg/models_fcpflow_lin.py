@@ -22,9 +22,10 @@ class InvertibleNorm(nn.Module):
             # Normalize input using calculated mean and std dev
             normalized_input = (input - mean) / (std)
             
-            self.running_mean = (1 - self.momentum) * self.running_mean + self.momentum * mean # update running mean
-            self.running_std = (1 - self.momentum) * self.running_std + self.momentum * std # update running std dev
-        
+            with torch.no_grad():
+                self.running_mean = (1 - self.momentum) * self.running_mean + self.momentum * mean # update running mean
+                self.running_std = (1 - self.momentum) * self.running_std + self.momentum * std # update running std dev
+            
             # log-determinant of the Jacobian)
             self.scale = 1 / (std)
             log_det = (
