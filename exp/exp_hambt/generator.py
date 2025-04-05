@@ -1,27 +1,44 @@
 import torch
 import numpy as np
 import pandas as pd
+import pickle
+
+from sklearn.mixture import GaussianMixture
 
 
 class DataGenerator:
-    def __init__(self, data_path, batch_size, device):
-        self.data_path = data_path
-        self.batch_size = batch_size
+    def __init__(self, device):
         self.device = device
-        self.data = None
-        self.scaler = None
+        
+        # Load gmm model
+        self._load_gmm_model()
 
-    def load_data(self):
-        # Load the data from the CSV file
-        self.data = pd.read_csv(self.data_path, index_col=0).values
+        
+    def _load_gmm_model(self, model_path = 'exp/exp_hambt/gmm_model.pkl'):
+        # Define the GMM model
+        self.gmm = GaussianMixture(n_components=3, covariance_type='full', random_state=0)
+        with open(model_path, 'rb') as f:
+            self.gmm = pickle.load(f)
 
-    def create_data_loader(self):
-        # Normalize the data
-        self.scaler = (self.data - np.mean(self.data)) / np.std(self.data)
+    def _load_generator(self, model_path= 'exp/exp_hambt/FCPflow_model.pth'):
+        # Load the generator model
+        self.generator = torch.load(model_path, map_location=self.device)
+        self.generator.eval()
+        
+    def _load_scaler(self, scaler_path = 'exp/exp_hambt/scaler.pkl'):
+        # Load the scaler
+        with open(scaler_path, 'rb') as f:
+            self.scaler = pickle.load(f)
+        
+    def generate(self, condition=5, num_samples = 1000):
+        # Condition is annual energ y consumption in MWh
+        pass
 
-        # Convert to PyTorch tensors and create batches
-        data_tensor = torch.tensor(self.scaler, dtype=torch.float32).to(self.device)
-        num_batches = len(data_tensor) // self.batch_size
 
-        for i in range(num_batches):
-            yield data_tensor[i * self.batch_size:(i + 1) * self.batch_size]
+if __name__ == "__main__":
+    # Example usage
+    data_path = 'data/uk_data_cleaned_ind_train.csv'
+    data = pd.read_csv(data_path, index_col=0)
+    print(data.head())
+    
+    generator = DataGenerator(device='cpu')
