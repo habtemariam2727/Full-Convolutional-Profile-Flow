@@ -92,6 +92,11 @@ def plot_figure(pre, re_data, scaler, con_dim, path='Generated Data Comparison.p
     plt.tight_layout()
     plt.savefig(path)
     plt.close()
+    
+    # log the figure to wandb
+    if wandb.run is not None:
+        wandb.log({"Generated Data Comparison": wandb.Image(path)})
+    
 
 def plot_pre(pre, re_data, scaler, con_dim, _sample_index=0 ,path='Generated Data Comparison.png'):
     # Inverse transform to get the original scale of the data
@@ -153,7 +158,7 @@ def train(path, model, train_loader, optimizer, epochs, cond_dim ,device, scaler
         loss_test = -llh_test.mean()-logdet_test
         
         # save the model
-        if _save:
+        if _save and epoch>=epochs/3:
             if loss_test.item() < loss_mid:
                 print('save the model')
                 save_path = os.path.join(path, 'FCPflow_model.pth')
