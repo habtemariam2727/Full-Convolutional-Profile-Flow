@@ -63,6 +63,6 @@ with open(scaler_path, 'wb') as f:
 
 # train the model
 path = os.path.join(_parent_path, 'exp/exp_hambt')
-tl.train(path, model, dataloader_train, optimizer, 100000, config['FCPflow']['condition_dim'], 
-         device, scaler, dataloader_test, scheduler, 500, True)
+tl.train(path, model, dataloader_train, optimizer, 8000, config['FCPflow']['condition_dim'], 
+         device, scaler, dataloader_test, scheduler, 50, True)
 

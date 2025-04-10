@@ -113,7 +113,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     
     plt.figure(figsize=(20, 5))
-    plt.plot(samples[:], alpha=0.01, c='red')
+    plt.plot(samples.T, alpha=0.01, c='red')
     plt.title('Generated samples')
     plt.xlabel('Time')
     plt.ylabel('Value')
