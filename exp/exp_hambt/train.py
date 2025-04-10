@@ -23,15 +23,17 @@ with open(os.path.join(_parent_path, 'exp/exp_hambt/config_uk.yaml')) as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
         
 # define the data loader
-data_path = os.path.join(_parent_path, 'data', 'uk_data_cleaned_ind_train.csv')
+data_path = os.path.join(_parent_path, 'data', 'aus_data_cleaned_annual_habt.csv')
+
 # read the data from the second column to the end
-np_array_train = pd.read_csv(data_path, index_col=0).values
-data_path = os.path.join(_parent_path, 'data', 'uk_data_cleaned_ind_test.csv')
-np_array_test = pd.read_csv(data_path,  index_col=0).values
+np_array_train = pd.read_csv(data_path).values
+
+data_path = os.path.join(_parent_path, 'data', 'aus_data_cleaned_annual_habt.csv')
+np_array_test = pd.read_csv(data_path).values
 
 # stack one extra column of zeros to the data as the condition
-dataloader_train, scaler = tl.create_data_loader(np_array_train[:,:], config['FCPflow']['batch_size'], True)
-dataloader_test, _ = tl.create_data_loader(np_array_test[:,:], config['FCPflow']['batch_size'], True)
+dataloader_train, scaler = tl.create_data_loader(np_array_train, config['FCPflow']['batch_size'], True)
+dataloader_test, _ = tl.create_data_loader(np_array_test, config['FCPflow']['batch_size'], True)
 
 
 # train the model
@@ -61,6 +63,6 @@ with open(scaler_path, 'wb') as f:
 
 # train the model
 path = os.path.join(_parent_path, 'exp/exp_hambt')
-tl.train(path, model, dataloader_train, optimizer, 10001, config['FCPflow']['condition_dim'], 
-         device, scaler, dataloader_test, scheduler, 100, True)
+tl.train(path, model, dataloader_train, optimizer, 100000, config['FCPflow']['condition_dim'], 
+         device, scaler, dataloader_test, scheduler, 500, True)
 

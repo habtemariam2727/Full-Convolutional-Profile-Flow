@@ -40,11 +40,11 @@ class DataGenerator:
         with open(model_path, 'rb') as f:
             self.gmm = pickle.load(f)
     
-    def _conditional_gmm(self, condition):
+    def _conditional_gmm(self, condition, samples):
         # Generate samples from the GMM model conditioned on the input condition
-        samples = self.gmm.sample(n_samples=1000)[0]
-        _mean = samples.mean(axis=0)
-        _percent = condition / _mean[0]
+        samples = self.gmm.sample(n_samples=samples)[0]
+        _mean = samples[:, 1].mean(axis=0)
+        _percent = condition / _mean
         _conditional_samples = samples * _percent
         return _conditional_samples
     
@@ -60,29 +60,62 @@ class DataGenerator:
         with open(scaler_path, 'rb') as f:
             self.scaler = pickle.load(f)
         
-    def generate(self, condition_value=5, num_samples = 1000):
-        # Condition is annual energ y consumption in MWh
-        _conditions = self._conditional_gmm(condition_value)
-        _noise = torch.randn(num_samples, self.config['FCPflow']['num_channels']).to(self.device)
-        _conditions = torch.tensor(_conditions).float().to(self.device)
-        _conditions = torch.cat((_conditions, _noise), dim=1)
-        _scaled_conditions = self.scaler.transform(_conditions.cpu().numpy())
-        _scaled_conditions = _scaled_conditions[:,:2]
-        _scaled_conditions = torch.tensor(_scaled_conditions).float().to(self.device)
-        generated_samples = self.generator.inverse(_noise, _scaled_conditions)
+    def generate(self, 
+                 condition_value=5,  # Condition is annual energy consumption in MWh
+                 num_samples = 1000): # number of samples to generate
+        _conditions = self._conditional_gmm(condition_value, num_samples*365)
+        _conditions = _conditions.reshape(num_samples, 365, 2)
+        _days_over_year = [i for i in range(365)]
+        _days_over_year = np.array(_days_over_year)
+        # repeate the days over year for each sample to have shape (num_samples, 365, 1)
+        _days_over_year = np.repeat(_days_over_year.reshape(1, 365), num_samples, axis=0)
+        _days_over_year = _days_over_year.reshape(num_samples, 365, 1)
+        
+        # concatenate the days over year with the conditions
+        _conditions = np.concatenate((_conditions, _days_over_year), axis=2)
+        reshape_condition = _conditions.reshape(num_samples*365, 3)
+        reshape_condition = torch.tensor(reshape_condition).float().to(self.device)
+        
+        # noise
+        _noise = torch.randn(num_samples*365, self.config['FCPflow']['num_channels']).to(self.device)
+        
+        # scaler condition
+        reshape_condition = torch.cat((_noise, reshape_condition), dim=1)
+        scaled_condition = self.scaler.transform(reshape_condition.cpu().numpy())
+        scaled_condition = scaled_condition[:, -3:]
+        scaled_condition = torch.tensor(scaled_condition).float().to(self.device)
+     
+        # Generate samples
+        generated_samples = self.generator.inverse(_noise, scaled_condition)
         generated_samples = generated_samples.cpu().detach().numpy()
-        generated_samples = np.hstack((_scaled_conditions.cpu().detach().numpy(), generated_samples))
+        generated_samples = np.hstack((generated_samples, scaled_condition.cpu().detach().numpy()))
         generated_samples = self.scaler.inverse_transform(generated_samples)
-        return generated_samples[:,2:], generated_samples[:,0:2]
+        
+        # _reshape the generated samples
+        _values_of_sample = generated_samples[:,:-3]
+        _values_of_sample = _values_of_sample.reshape(num_samples, 365*48)
+        condition_sampes = generated_samples[:,-3:]
+        condition_sampes = condition_sampes.reshape(num_samples, 365, 3)
+        return _values_of_sample, condition_sampes
 
 if __name__ == "__main__":
     # Example usage
-    data_path = 'data/uk_data_cleaned_ind_train.csv'
-    data = pd.read_csv(data_path, index_col=0)
+    # data_path = 'data/uk_data_cleaned_ind_train.csv'
+    # data = pd.read_csv(data_path, index_col=0)
     # print(data.head())
     
     generator = DataGenerator(device='cpu')
-    samples, _ = generator.generate(condition_value=1, num_samples = 1000)
+    samples, _ = generator.generate(condition_value=3, num_samples = 20)
     print(_)
-    print(samples)
-    print(samples.mean())
+    print(samples.shape)
+    
+    # plot the generated samples
+    import matplotlib.pyplot as plt
+    
+    plt.figure(figsize=(20, 5))
+    plt.plot(samples[:], alpha=0.01, c='red')
+    plt.title('Generated samples')
+    plt.xlabel('Time')
+    plt.ylabel('Value')
+    plt.savefig('exp/exp_hambt/generated_samples_year.png')
+    plt.close()
