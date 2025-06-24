@@ -3,5 +3,5 @@ numpy <2.0
 scikit-learn
 torch == 2.1.2
 scipy
-wandb = 0.17.7
+wandb 
 matplotlib == 3.7.0

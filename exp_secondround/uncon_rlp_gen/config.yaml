@@ -1,0 +1,21 @@
+VAE:
+# -------- Define the VAE model
+  latent_dim: 32
+  hidden_dim: 548
+  input_dim: 96  # Example for MNIST, adjust as needed
+# --------- Define the experiment ---------
+  batch_size: 128
+  lr: 0.0005
+  weight_decay: 0.001
+  num_epochs: 10000
+
+
+Diffusion:
+  T: 200 # Number of training iterations
+  num_epochs: 10000
+  lr: 0.0005
+  batch_size: 128
+  weight_decay: 0.001
+  input_dim: 96
+  hidden_dim: 256
+  output_dim: 96
