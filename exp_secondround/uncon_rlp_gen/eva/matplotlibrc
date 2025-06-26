@@ -1,0 +1,22 @@
+#### MATPLOTLIBRC FORMAT
+
+# Font settings
+font.family : Times New Roman
+font.size : 30  # Default font size
+
+# Axes settings
+axes.titlesize : 25  # Title font size
+axes.labelsize : 25  # Axis label font size
+axes.grid : True  # Enable grid by default
+
+# Tick settings
+xtick.labelsize : 30  # X-tick label font size
+ytick.labelsize : 30  # Y-tick label font size
+
+# Colorbar settings
+# colorbar.labelsize : 18  # Colorbar label font size
+
+# Figure settings
+figure.figsize : 8, 6  # Default figure size
+
+# Other settings can be added as needed
