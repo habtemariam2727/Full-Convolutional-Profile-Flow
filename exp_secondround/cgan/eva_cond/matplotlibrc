@@ -14,7 +14,7 @@ xtick.labelsize : 30  # X-tick label font size
 ytick.labelsize : 30  # Y-tick label font size
 
 # Colorbar settings
-# colorbar.labelsize : 18  # Colorbar label font size
+colorbar.labelsize : 18  # Colorbar label font size
 
 # Figure settings
 figure.figsize : 8, 6  # Default figure size

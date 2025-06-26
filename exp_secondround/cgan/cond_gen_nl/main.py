@@ -2,7 +2,7 @@
 
 import os
 import sys
-_parent_path = os.path.join(os.path.dirname(__file__), '..','..','..','..')
+_parent_path = os.path.join(os.path.dirname(__file__), '..','..','..')
 sys.path.append(_parent_path)
 
 import pandas as pd
@@ -14,14 +14,14 @@ from torch import nn
 import wandb
 import matplotlib.pyplot as plt
 
-from exp_secondround.uncon_rlp_gen.cgan.models import Generator, Discriminator
+from exp_secondround.cgan.models import Generator, Discriminator
 import tools.tools_train as tl
 
 # define the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # import the configuration
-with open('exp_secondround/uncon_rlp_gen/cgan/config.yaml') as file:
+with open('exp_secondround/cgan/config.yaml') as file:
     config = yaml.load(file, Loader=yaml.FullLoader)['NL_cgan']
     
 # define the data loader
@@ -121,6 +121,7 @@ for epoch in range(config['epochs']):
             fake_data = generator(noise, condition)
             fake_data = torch.concat((fake_data, condition), dim=1)  # concatenate condition to generated data
             fake_data = scaler.inverse_transform(fake_data.cpu().numpy())
+            
             fake_data = fake_data[:, :-cond_dim]  # remove condition for plotting
             plt.figure(figsize=(10, 5))
             plt.plot(fake_data.T, alpha=0.5)
