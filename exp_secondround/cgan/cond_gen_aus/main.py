@@ -2,7 +2,7 @@
 
 import os
 import sys
-_parent_path = os.path.join(os.path.dirname(__file__), '..','..','..','..')
+_parent_path = os.path.join(os.path.dirname(__file__), '..','..','..')
 sys.path.append(_parent_path)
 
 import pandas as pd
@@ -14,14 +14,14 @@ from torch import nn
 import wandb
 import matplotlib.pyplot as plt
 
-from exp_secondround.uncon_rlp_gen.cgan.models import Generator, Discriminator
+from exp_secondround.cgan.models import Generator, Discriminator
 import tools.tools_train as tl
 
 # define the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # import the configuration
-with open('exp_secondround/uncon_rlp_gen/cgan/config.yaml') as file:
+with open('exp_secondround/cgan/config.yaml') as file:
     config = yaml.load(file, Loader=yaml.FullLoader)['AUS_cgan']
     
 # define the data loader
@@ -128,15 +128,15 @@ for epoch in range(config['epochs']):
             plt.title(f'Generated Samples at Epoch {epoch + 1}')
             plt.xlabel('Time Steps')
             plt.ylabel('Values')
-            plt.savefig(f'exp_secondround/uncon_rlp_gen/cgan/cond_gen_aus/generated_samples.png')
+            plt.savefig(f'exp_secondround/cgan/cond_gen_aus/generated_samples.png')
             plt.close()
         
         # save the model
-        torch.save(generator.state_dict(), f'exp_secondround/uncon_rlp_gen/cgan/cond_gen_aus/generator_aus.pth')
+        torch.save(generator.state_dict(), f'exp_secondround/cgan/cond_gen_aus/generator_aus.pth')
         
         # save the geneated samples
         fake_data_df = pd.DataFrame(fake_data)
-        fake_data_df.to_csv(f'exp_secondround/uncon_rlp_gen/cgan/cond_gen_aus/generated_samples.csv', index=False)
+        fake_data_df.to_csv(f'exp_secondround/cgan/cond_gen_aus/generated_samples.csv', index=False)
 
 
     print(f"Epoch [{epoch+1}/{config['epochs']}], D_loss: {d_loss.item():.4f}, G_loss: {g_loss.item():.4f}")

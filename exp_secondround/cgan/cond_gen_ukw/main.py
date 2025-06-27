@@ -2,7 +2,7 @@
 
 import os
 import sys
-_parent_path = os.path.join(os.path.dirname(__file__), '..','..','..','..')
+_parent_path = os.path.join(os.path.dirname(__file__), '..','..','..')
 sys.path.append(_parent_path)
 
 import pandas as pd
@@ -14,14 +14,14 @@ from torch import nn
 import wandb
 import matplotlib.pyplot as plt
 
-from exp_secondround.uncon_rlp_gen.cgan.models import Generator, Discriminator
+from exp_secondround.cgan.models import Generator, Discriminator
 import tools.tools_train as tl
 
 # define the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # import the configuration
-with open('exp_secondround/uncon_rlp_gen/cgan/config.yaml') as file:
+with open('exp_secondround/cgan/config.yaml') as file:
     config = yaml.load(file, Loader=yaml.FullLoader)['UKW_cgan']
     
 # define the data loader
@@ -113,28 +113,28 @@ for epoch in range(config['epochs']):
     if (epoch) % 20 == 0:
         generator.eval()
         with torch.no_grad():
-            test_data_scaled = scaler.transform(np_array_train[:300,:])
+            test_data_scaled = scaler.transform(np_array_train[:,:])
             condition_test = test_data_scaled[:,-cond_dim:]
             condition = torch.tensor(condition_test).to(device)
             noise = torch.randn(condition.shape[0], config['noise_dim']).to(device)
             fake_data = generator(noise, condition)
             fake_data = torch.concat((fake_data, condition), dim=1)  # concatenate condition to generated data
             fake_data = scaler.inverse_transform(fake_data.cpu().numpy())
-            fake_data = fake_data[:, :-cond_dim]  # remove condition for plotting
+            # remove condition for plotting
             plt.figure(figsize=(10, 5))
-            plt.plot(fake_data.T, alpha=0.5)
+            plt.plot(fake_data[:, :-cond_dim].T, alpha=0.5)
             plt.title(f'Generated Samples at Epoch {epoch + 1}')
             plt.xlabel('Time Steps')
             plt.ylabel('Values')
-            plt.savefig(f'exp_secondround/uncon_rlp_gen/cgan/cond_gen_ukw/generated_samples.png')
+            plt.savefig(f'exp_secondround/cgan/cond_gen_ukw/generated_samples.png')
             plt.close()
         
         # save the model
-        torch.save(generator.state_dict(), f'exp_secondround/uncon_rlp_gen/cgan/cond_gen_ukw/generator_ukw.pth')
+        torch.save(generator.state_dict(), f'exp_secondround/cgan/cond_gen_ukw/generator_ukw.pth')
         
         # save the geneated samples
         fake_data_df = pd.DataFrame(fake_data)
-        fake_data_df.to_csv(f'exp_secondround/uncon_rlp_gen/cgan/cond_gen_ukw/generated_samples.csv', index=False)
+        fake_data_df.to_csv(f'exp_secondround/cgan/cond_gen_ukw/generated_samples.csv', index=False)
 
 
     print(f"Epoch [{epoch+1}/{config['epochs']}], D_loss: {d_loss.item():.4f}, G_loss: {g_loss.item():.4f}")

@@ -3,7 +3,7 @@ AUS_cgan:
   noise_dim: 12
   condition_dim: 2
   output_shape: 48
-  hidden_dim: 128
+  hidden_dim: 256
   lr: 0.0002
   beta1: 0.5
   epochs: 1000
@@ -24,7 +24,7 @@ UK_cgan:
   noise_dim: 12
   condition_dim: 2
   output_shape: 48
-  hidden_dim: 128
+  hidden_dim: 256
   lr: 0.0002
   beta1: 0.5
   epochs: 1000
@@ -35,7 +35,7 @@ USA_cgan:
   noise_dim: 12
   condition_dim: 2
   output_shape: 96
-  hidden_dim: 256
+  hidden_dim: 356
   lr: 0.0002
   beta1: 0.5
   epochs: 1000
@@ -47,7 +47,7 @@ UKW_cgan:
   noise_dim: 12
   condition_dim: 9
   output_shape: 48
-  hidden_dim: 128
+  hidden_dim: 356
   lr: 0.0002
   beta1: 0.5
-  epochs: 1000
+  epochs: 10000
