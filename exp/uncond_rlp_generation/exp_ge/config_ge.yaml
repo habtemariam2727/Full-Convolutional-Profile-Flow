@@ -2,7 +2,7 @@ FCPflow:
   #--------Define the model--------
   num_blocks: 3
   sfactor: 0.3
-  hidden_dim: 384
+  hidden_dim: 128
   num_channels: 96 # resolution of the time series 
   condition_dim: 1 # unconditioned generation
 

@@ -12,14 +12,14 @@ import matplotlib.pyplot as plt
 import plot_function as pf
 import evaluation_m as eva
 
-gen_datapath = 'exp_secondround/cgan/cond_gen_uk/generated_samples.csv'
-origial_data_path = os.path.join(_parent_path, 'data/uk_data_cleaned_ind_test.csv')
+gen_datapath = 'exp_secondround/cgan/cond_gen_usa/generated_samples.csv'
+origial_data_path = os.path.join(_parent_path, 'data/usa_data_cleaned_annual_test.csv')
 
 # Load the generated data
 gen_data = pd.read_csv(gen_datapath).values
 print('gen_data shape: ', gen_data.shape)
 # Ensure no negative values
-gen_data[gen_data < 0] = 0
+# gen_data[gen_data < 0] 
 
 # drop nan and inf values
 gen_data = gen_data[~np.isnan(gen_data).any(axis=1)]
@@ -38,9 +38,9 @@ original_data = original_data[~np.isinf(original_data).any(axis=1)]
 print('original_data shape after dropping nan and inf: ', original_data.shape)
 
 # Plot the samples
-save_path = 'exp_secondround/cgan/eva_cond/uk_gen_samples.png'
-save_path_original = 'exp_secondround/cgan/eva_cond/uk_original_samples.png'  
-pf.plot_consumption(original_data[:,:-2], gen_data, 'cGAN', '-', save_path, show_color_bar=True)
+save_path = 'exp_secondround/cgan/eva_cond/usa_gen_samples.png'
+save_path_original = 'exp_secondround/cgan/eva_cond/usa_original_samples.png'  
+pf.plot_consumption(original_data[:,:-2], gen_data, 'cWGAN-GP', '-', save_path, show_color_bar=True)
 pf.plot_consumption(original_data[:,:-2], original_data[:,:-2], 'Original Samples', '-', save_path_original, show_color_bar=True)
 
 # Eva the energy distance

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib as mpl
 # Path to your matplotlibrc file
-config_file_path = 'exp_secondround/uncon_rlp_gen/eva/matplotlibrc'
+config_file_path = 'exp_secondround/uncon_rlp_gen/eva_uncond/matplotlibrc'
 import seaborn as sns
 
 # Load your custom matplotlib rc file

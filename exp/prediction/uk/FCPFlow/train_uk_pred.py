@@ -17,7 +17,7 @@ import tools.tools_train as tl
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # import the configuration
-with open(os.path.join(_parent_path, 'exp/prediction/uk/FCPFlow/config_uk_pre.yaml')) as file:
+with open(os.path.join(_parent_path, 'exp/prediction/uk/FCPFlow/config_pre.yaml')) as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
         
 # define the data loader

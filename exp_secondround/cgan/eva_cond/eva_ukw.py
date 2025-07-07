@@ -41,7 +41,7 @@ print('original_data shape after dropping nan and inf: ', original_data.shape)
 # Plot the samples
 save_path = 'exp_secondround/cgan/eva_cond/ukw_gen_samples.png'
 save_path_original = 'exp_secondround/cgan/eva_cond/ukw_original_samples.png'  
-pf.plot_consumption(original_data[:,:48], gen_data, 'cGAN', '-', save_path, show_color_bar=True)
+pf.plot_consumption(original_data[:,:48], gen_data, 'cWGAN-GP', '-', save_path, show_color_bar=True)
 pf.plot_consumption(original_data[:,:48], original_data[:,:48], 'Original Samples', '-', save_path_original, show_color_bar=True)
 
 # Eva the energy distance

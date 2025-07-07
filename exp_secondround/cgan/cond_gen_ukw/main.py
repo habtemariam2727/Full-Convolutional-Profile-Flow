@@ -14,7 +14,7 @@ from torch import nn
 import wandb
 import matplotlib.pyplot as plt
 
-from exp_secondround.cgan.models import Generator, Discriminator
+from exp_secondround.cgan.models import Generator, Discriminator, compute_gradient_penalty
 import tools.tools_train as tl
 
 # define the device
@@ -71,6 +71,7 @@ wandb.log({
 cond_dim = config['condition_dim']
 for epoch in range(config['epochs']):
     for _, data in enumerate(dataloader_train):
+        batch_size = data[0].shape[0]
         generator.train()
         discriminator.train()
         pre = data[0].to(device) # + torch.randn_like(data[0].to(device))/(256)
@@ -78,36 +79,36 @@ for epoch in range(config['epochs']):
         # split the data into data and conditions
         cond = pre[:,-cond_dim:]
         data = pre[:,:-cond_dim] # + torch.rand_like(data[:,:-cond_dim])/(256) 
-        batch_size = data.shape[0]
         
         real_data, condition =  data.to(device), cond.to(device)
-        
-        real_labels = torch.ones(batch_size, 1).to(device)
-        fake_labels = torch.zeros(batch_size, 1).to(device)
-
-        # train discriminator
-        optimizer_D.zero_grad()
-
-        outputs_real = discriminator(real_data, condition)
-        d_loss_real = criterion(outputs_real, real_labels)
-
         noise = torch.randn(batch_size, config['noise_dim']).to(device)
         fake_data = generator(noise, condition)
-
+        
+        # train discriminator
+        optimizer_D.zero_grad()
+        
+        # compute the gradient penalty
+        gradient_penalty = compute_gradient_penalty(discriminator,  condition, real_data, fake_data, device)
+        
+        outputs_real = discriminator(real_data, condition)
         outputs_fake = discriminator(fake_data.detach(), condition)
-        d_loss_fake = criterion(outputs_fake, fake_labels)
 
-        d_loss = d_loss_real + d_loss_fake
+        d_loss =  -torch.mean(outputs_real) + torch.mean(outputs_fake) + 10 * gradient_penalty
         d_loss.backward()
         optimizer_D.step()
 
         # train generator
-        optimizer_G.zero_grad()
-        outputs_fake = discriminator(fake_data, condition)
-        g_loss = criterion(outputs_fake, real_labels)
+        for _ in range(1):
+            optimizer_G.zero_grad()
+            noise = torch.randn(batch_size, config['noise_dim']).to(device)
+            fake_data = generator(noise, condition)
+            
+            outputs_fake = discriminator(fake_data, condition)
+            
+            g_loss = -torch.mean(outputs_fake)  # generator loss    
 
-        g_loss.backward()
-        optimizer_G.step()
+            g_loss.backward()
+            optimizer_G.step()
     
     # plot generated samples
     if (epoch) % 20 == 0:

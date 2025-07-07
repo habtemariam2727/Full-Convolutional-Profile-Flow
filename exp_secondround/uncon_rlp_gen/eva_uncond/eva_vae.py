@@ -35,12 +35,12 @@ original_data = np.array(original_data)
 print('original_data shape: ', original_data.shape)
 
 # Plot the samples
-save_path_vae = 'exp_secondround/uncon_rlp_gen/eva/vae_samples.png'
-save_path_original = 'exp_secondround/uncon_rlp_gen/eva/original_samples.png'
-save_path_diffusion = 'exp_secondround/uncon_rlp_gen/eva/diffusion_samples.png'   
+save_path_vae = 'exp_secondround/uncon_rlp_gen/eva_uncond/vae_samples.png'
+save_path_original = 'exp_secondround/uncon_rlp_gen/eva_uncond/original_samples.png'
+save_path_diffusion = 'exp_secondround/uncon_rlp_gen/eva_uncond/diffusion_samples.png'   
 pf.plot_consumption(original_data, vae_gen_data, 'VAE', '-', save_path_vae, show_color_bar=True)
 pf.plot_consumption(original_data, original_data, 'Original Samples', '-', save_path_original, show_color_bar=True)
-pf.plot_consumption(original_data, diffusion_gen_data, 'Diffusion', '-', save_path_diffusion, show_color_bar=True)
+pf.plot_consumption(original_data, diffusion_gen_data, 'DDPM', '-', save_path_diffusion, show_color_bar=True)
 
 # Eva the energy distance
 print('Calculating energy distance...')
