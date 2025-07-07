@@ -18,7 +18,7 @@ import tools.tools_train as tl
 import matplotlib.pyplot as plt
 
 # define the device
-device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # import the configuration
 with open(os.path.join(_parent_path,'exp_secondround/uncon_rlp_gen/config.yaml')) as file:
@@ -67,35 +67,35 @@ for epoch in range(num_epochs):
 
         total_loss += loss.item()
 
-    avg_loss = total_loss / len(dataloader.dataset)
-    print(f'Epoch: {epoch+1}/{num_epochs}, Loss: {avg_loss:.6f}')
-    
-    # log the loss to wandb
-    wandb.log({"epoch": epoch + 1, "loss": avg_loss})
+        # avg_loss = total_loss / len(dataloader.dataset)
+        # print(f'Epoch: {epoch+1}/{num_epochs}, Loss: {avg_loss:.6f}')
+        
+        # log the loss to wandb
+        wandb.log({"epoch": epoch + 1, "loss": loss.item()})
     
     #  plot the generated samples every 100 epochs
-    if avg_loss < init_loss  and (epoch + 1) % 100 == 0:
-        model.eval()
-        with torch.no_grad():
-            sample = torch.randn(365, config['VAE']['latent_dim']).to(device)
-            generated_samples = model.decode(sample).cpu().numpy()
-            generated_samples = scaler.inverse_transform(generated_samples)
+    # if avg_loss < init_loss  and (epoch + 1) % 100 == 0:
+    #     model.eval()
+    #     with torch.no_grad():
+    #         sample = torch.randn(365, config['VAE']['latent_dim']).to(device)
+    #         generated_samples = model.decode(sample).cpu().numpy()
+    #         generated_samples = scaler.inverse_transform(generated_samples)
             
-            plt.figure(figsize=(10, 10))
-            plt.plot(generated_samples.T, alpha=0.5)
-            plt.title(f'Generated Samples at Epoch {epoch + 1}')
-            plt.xlabel('Time Steps')
-            plt.ylabel('Value')
-            plt.grid()
-            plt.savefig(f'exp_secondround/uncon_rlp_gen/vae_gen_uncond.png')
-            plt.close()
+    #         plt.figure(figsize=(10, 10))
+    #         plt.plot(generated_samples.T, alpha=0.5)
+    #         plt.title(f'Generated Samples at Epoch {epoch + 1}')
+    #         plt.xlabel('Time Steps')
+    #         plt.ylabel('Value')
+    #         plt.grid()
+    #         plt.savefig(f'exp_secondround/uncon_rlp_gen/vae_gen_uncond.png')
+    #         plt.close()
 
-            # save the model 
-            path = os.path.join('exp_secondround/uncon_rlp_gen/vae/models', 'uncond_vae_model.pt')
-            torch.save(model.state_dict(), path)
+    #         # save the model 
+    #         path = os.path.join('exp_secondround/uncon_rlp_gen/vae/models', 'uncond_vae_model.pt')
+    #         torch.save(model.state_dict(), path)
 
-            print("Training complete. Model saved.")
+    #         print("Training complete. Model saved.")
             
-            # save the data 
-            generated_samples_df = pd.DataFrame(generated_samples)
-            generated_samples_df.to_csv(os.path.join('exp_secondround/uncon_rlp_gen/vae', 'uncond_vae_samples.csv'), index=False)
+    #         # save the data 
+    #         generated_samples_df = pd.DataFrame(generated_samples)
+    #         generated_samples_df.to_csv(os.path.join('exp_secondround/uncon_rlp_gen/vae', 'uncond_vae_samples.csv'), index=False)

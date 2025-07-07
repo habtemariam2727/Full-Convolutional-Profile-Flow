@@ -58,13 +58,17 @@ model = FFD(
 optimizer = optim.Adam(model.parameters(), lr=config['Diffusion']['lr'], weight_decay=config['Diffusion']['weight_decay'])
 criterion = nn.MSELoss()
 
+# print the number of parameters
+num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+print(f'Number of parameters: {num_params}')
+
 # define the data loader
 data_path = os.path.join(_parent_path, 'data', 'ge_data_ind.csv')
 np_array = pd.read_csv(data_path).values
 dataloader, scaler = tl.create_data_loader(np_array, config['VAE']['batch_size'], True)
 
 # Initialize Weights & Biases
-wandb.init(project='diffusion-model', config=config)
+wandb.init(project='diffusion-model-loss', config=config)
 wandb.watch(model, log='all')
 
 # log amount of parameters
