@@ -138,47 +138,52 @@ def train(path, model, train_loader, optimizer, epochs, cond_dim ,device, scaler
             optimizer.step()
             if scheduler is not None:
                 scheduler.step()
+            #  print(epoch, 'loss: ', loss.item())
+            if _wandb:
+                wandb.log({'loss': loss.item()})
+                
+                # log lr
+                wandb.log({'lr': optimizer.param_groups[0]['lr']})
+            
             
         # ----------------- moniter loss -----------------
-        print(epoch, 'loss: ', loss.item())
-        if _wandb:
-            wandb.log({'loss': loss.item()})
+       
         # ----------------- moniter loss -----------------
             
         # ----------------- test the model -----------------
-        model.eval()
+        # model.eval()
+        # 
+        # # test the model
+        # pre = next(iter(test_loader))[0].to(device)
+        # cond_test = pre[:,-cond_dim:]
+        # data_test = pre[:,:-cond_dim]
         
-        # test the model
-        pre = next(iter(test_loader))[0].to(device)
-        cond_test = pre[:,-cond_dim:]
-        data_test = pre[:,:-cond_dim]
+        # gen_test, logdet_test = model(data_test, cond_test)
+        # llh_test = log_likelihood(gen_test, type='Gaussian')
+        # loss_test = -llh_test.mean()-logdet_test
         
-        gen_test, logdet_test = model(data_test, cond_test)
-        llh_test = log_likelihood(gen_test, type='Gaussian')
-        loss_test = -llh_test.mean()-logdet_test
-        
-        # save the model
-        if _save and epoch>=epochs/3:
-            if loss_test.item() < loss_mid:
-                print('save the model')
-                save_path = os.path.join(path, 'FCPflow_model.pth')
-                torch.save(model.state_dict(), save_path)
-                loss_mid = loss_test.item()
+        # # save the model
+        # if _save and epoch>=epochs/3:
+        #     if loss_test.item() < loss_mid:
+        #         print('save the model')
+        #         save_path = os.path.join(path, 'FCPflow_model.pth')
+        #         torch.save(model.state_dict(), save_path)
+        #         loss_mid = loss_test.item()
             
             
-        # plot the generated data
-        z = torch.randn(data_test.shape[0], data_test.shape[1]).to(device)
-        gen_test = model.inverse(z, cond_test)
-        re_data = torch.cat((gen_test, cond_test), dim=1)
-        re_data = re_data.detach()
-        # ----------------- test the model -----------------
+        # # plot the generated data
+        # z = torch.randn(data_test.shape[0], data_test.shape[1]).to(device)
+        # gen_test = model.inverse(z, cond_test)
+        # re_data = torch.cat((gen_test, cond_test), dim=1)
+        # re_data = re_data.detach()
+        # # ----------------- test the model -----------------
         
-        # ----------------- plot the generated data -----------------
-        if _plot:
-            if epoch % pgap ==0: 
-                save_path = os.path.join(path, 'FCPflow_generated.png')
-                plot_figure(pre, re_data, scaler, cond_dim, save_path)
-        # ----------------- plot the generated data -----------------
+        # # ----------------- plot the generated data -----------------
+        # if _plot:
+        #     if epoch % pgap ==0: 
+        #         save_path = os.path.join(path, 'FCPflow_generated.png')
+        #         plot_figure(pre, re_data, scaler, cond_dim, save_path)
+        # # ----------------- plot the generated data -----------------
 
 def train_pre(path, model, train_loader, optimizer, epochs, cond_dim ,device, scaler, test_loader, scheduler, pgap=100, _wandb=True):
     model.train()
