@@ -36,6 +36,11 @@ class Generator(nn.Module):
             nn.BatchNorm1d(hidden_dim),
             nn.LeakyReLU(),
             
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.BatchNorm1d(hidden_dim),
+            nn.LeakyReLU(),
+            
+            
             nn.Linear(hidden_dim, output_shape)
         )
 

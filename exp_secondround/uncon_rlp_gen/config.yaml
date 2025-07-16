@@ -24,7 +24,7 @@ WGAN_GP:
   batch_size: 2131
   noise_dim: 48
   output_shape: 96
-  hidden_dim: 700
+  hidden_dim: 200
   lr: 0.0002
   beta1: 0.5
   epochs: 1000001
