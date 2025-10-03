@@ -48,3 +48,6 @@ samples = pipeline.sample_from_trained_model(condition_array, device='cpu')
 # Plot the samples
 plt.plot(samples[:, :-2].T)
 plt.savefig(save_path + 'sample.png')
+
+
+print("Process completed. Check the save_path for outputs.")
